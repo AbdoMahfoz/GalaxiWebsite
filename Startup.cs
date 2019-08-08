@@ -1,10 +1,13 @@
+using GalaxiWebsite.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace GalaxiWebsite
 {
@@ -21,11 +24,39 @@ namespace GalaxiWebsite
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "ClientApp/build";
+            });
+            services.AddDbContext<ApplicationDbContext>((options) =>
+            {
+                string url = Environment.GetEnvironmentVariable("DATABASE_URL");
+                if (string.IsNullOrWhiteSpace(url))
+                {
+                    options.UseSqlServer("Server=(localdb)\\mssqllocaldb;" +
+                                         "Database=GalaxiWebsiteDev;" +
+                                         "Trusted_Connection=True;" +
+                                         "MultipleActiveResultSets=true");
+                }
+                else
+                {
+                    url = url.Substring(url.IndexOf("//") + 2);
+                    string userName = url.Substring(0, url.IndexOf(':'));
+                    url = url.Substring(url.IndexOf(':') + 1);
+                    string password = url.Substring(0, url.IndexOf('@'));
+                    url = url.Substring(url.IndexOf('@') + 1);
+                    string host = url.Substring(0, url.IndexOf(':'));
+                    url = url.Substring(url.IndexOf(':') + 1);
+                    string port = url.Substring(0, url.IndexOf('/'));
+                    string database = url.Substring(url.IndexOf('/') + 1);
+                    options.UseNpgsql($"Host={host};" +
+                                      $"Port={port};" +
+                                      $"Database={database};" +
+                                      $"Username={userName};" +
+                                      $"Password={password};" +
+                                      $"SSLMode=Require;TrustServerCertificate=true");
+                }
             });
         }
 
