@@ -1,3 +1,5 @@
-"scripts": {
-  "postinstall": "cd ClientApp && npm install"
+{
+  "scripts" : {
+    "postinstall": "cd ClientApp && npm install"
+  }
 }
