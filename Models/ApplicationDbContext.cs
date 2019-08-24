@@ -7,8 +7,13 @@ namespace Models
 {
     public class ApplicationDbContext : DbContext
     {
-        public static string LocalDatabaseName {get; set;}
+        public static string LocalDatabaseName { get; set; } = "galaxi";
         public DbSet<User> Users { get; set; }
+        public DbSet<Faculty> Faculties { get; set; }
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<Item> Items { get; set; }
+        public DbSet<CheckIn> CheckIns { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         public ApplicationDbContext() { }
         protected override void OnConfiguring(DbContextOptionsBuilder options)
