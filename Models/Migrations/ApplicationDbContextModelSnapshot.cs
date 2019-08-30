@@ -175,6 +175,8 @@ namespace Models.Migrations
                     b.Property<string>("Password")
                         .IsRequired();
 
+                    b.Property<int>("Role");
+
                     b.Property<string>("UserName")
                         .IsRequired();
 
