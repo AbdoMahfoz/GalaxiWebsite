@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using Models.DataModels;
 using Models.Helpers;
 using Newtonsoft.Json;
@@ -10,7 +9,7 @@ namespace Models
 {
     public class ApplicationDbContext : DbContext
     {
-        public static string LocalDatabaseName { get; set; } = "galaxi";
+        public static string LocalDatabaseName { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Faculty> Faculties { get; set; }
         public DbSet<Client> Clients { get; set; }
