@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -120,7 +121,8 @@ namespace WebAPI
             services.AddTransient<IValidator<UserAuthenticationRequest>, UserAuthenticationRequestValidator>();
             services.AddScoped<IAuthorizationHandler, LoginHandler>();
             services.AddSingleton<IPasswordManager, RFC2898PasswordManager>();
-            new BaseInitializer().Initialize();
+            new ApplicationDbContext().Database.Migrate();
+            new BaseInitializer(services.BuildServiceProvider());
         }
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
