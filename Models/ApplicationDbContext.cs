@@ -24,6 +24,7 @@ namespace Models
         }
         public static void Configure(DbContextOptionsBuilder options)
         {
+            options.UseLazyLoadingProxies();
             string url = Environment.GetEnvironmentVariable("DATABASE_URL");
             if (string.IsNullOrWhiteSpace(url))
             {
