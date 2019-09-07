@@ -9,6 +9,7 @@ namespace Repository.ExtendedRepositories
     {
         User GetUser(string username);
         bool CheckUsernameExists(string username);
+        bool AdminExists();
     }
     public class UserRepository : Repository<User>, IUserRepository
     {
@@ -20,7 +21,11 @@ namespace Repository.ExtendedRepositories
         }
         public bool CheckUsernameExists(string username)
         {
-            return (from user in entities where user.UserName == username && user.IsDeleted == false select user.Id).Count() != 0;
+            return (from user in entities where user.UserName == username && !user.IsDeleted select user.Id).Count() != 0;
+        }
+        public bool AdminExists()
+        {
+            return (from user in entities where user.Role == UserRole.Admin && !user.IsDeleted select user).Any();
         }
     }
 }   

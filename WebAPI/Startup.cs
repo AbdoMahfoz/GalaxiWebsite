@@ -117,6 +117,8 @@ namespace WebAPI
             });
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IClientManager, ClientManager>();
             services.AddTransient<IAuth, JwtAuthorization>();
             services.AddTransient<IValidator<UserAuthenticationRequest>, UserAuthenticationRequestValidator>();
             services.AddScoped<IAuthorizationHandler, LoginHandler>();
