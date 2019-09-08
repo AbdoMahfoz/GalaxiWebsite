@@ -59,16 +59,17 @@ namespace BusinessLogic.Implementations
             }
             return GenerateToken(user);
         }
-        public bool Register(UserAuthenticationRequest request, UserRole Role)
+        public int Register(UserAuthenticationRequest request, UserRole Role)
         {
-            if (UserRepository.CheckUsernameExists(request.Username)) return false;
-            UserRepository.Insert(new User
+            if (UserRepository.CheckUsernameExists(request.Username)) return -1;
+            User user = new User
             {
                 UserName = request.Username,
                 Password = PasswordManager.HashPassword(request.Password),
                 Role = Role
-            }).Wait();
-            return true;
+            };
+            UserRepository.Insert(user).Wait();
+            return user.Id;
         }
         public void Logout(int UserId)
         {

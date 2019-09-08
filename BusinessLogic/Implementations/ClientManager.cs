@@ -4,15 +4,19 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 using Models.DataModels;
+using Services.DTOs;
+using Services;
 
 namespace BusinessLogic.Implementations
 {
     public class ClientManager : IClientManager
     {
         private readonly IClientRepository Clients;
-        public ClientManager(IClientRepository Clients)
+        private readonly IAuth Auth;
+        public ClientManager(IClientRepository Clients, IAuth Auth)
         {
             this.Clients = Clients;
+            this.Auth = Auth;
         }
         public Client GetClient(string Phonenumber)
         {
@@ -40,11 +44,30 @@ namespace BusinessLogic.Implementations
                 }
                 Results.Add(new KeyValuePair<int, string>(dp[0, 0], Suspect));
             }
-            string[] FinalPhoneNumbers = (from result in Results
-                                          where result.Key <= sensitivity
-                                          orderby result.Key ascending
-                                          select result.Value).ToArray();
-            return from client in Clients.GetByPhonenumbers(FinalPhoneNumbers) select client.Phonenumber;
+            return from result in Results
+                   where result.Key <= sensitivity
+                   orderby result.Key ascending
+                   select result.Value;
+        }
+        public RegisterResult RegisterClient(UserRegisterRequest user)
+        {
+            if(Clients.PhonenumberExists(user.Phonenumber))
+            {
+                return RegisterResult.PhonenumberExists;
+            }
+            Client client = Helpers.MapTo<Client>(user);
+            client.UserId = Auth.Register(new UserAuthenticationRequest
+                            {
+                                Username = user.Username,
+                                Password = user.Password
+                            },
+                            UserRole.User);
+            if(client.UserId == -1)
+            {
+                return RegisterResult.UsernameExists;
+            }
+            Clients.Insert(client).Wait();
+            return RegisterResult.Ok;
         }
     }
 }

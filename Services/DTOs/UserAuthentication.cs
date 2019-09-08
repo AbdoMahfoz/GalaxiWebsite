@@ -18,4 +18,12 @@
             this.ExpiresIn = ExpiresIn;
         }
     }
+    public class UserRegisterRequest : UserAuthenticationRequest
+    {
+        public string Phonenumber { get; set; }
+        public string Name { get; set; }
+        public int FacultyId { get; set; }
+        public string Email { get; set; }
+        public int Year { get; set; }
+    }
 }

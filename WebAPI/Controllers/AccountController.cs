@@ -18,11 +18,13 @@ namespace WebAPI.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAuth Auth;
+        private readonly IClientManager ClientManager;
         private readonly IOptions<AppSettings> options;
-        public AccountController(IOptions<AppSettings> options, IAuth Auth)
+        public AccountController(IOptions<AppSettings> options, IAuth Auth, IClientManager ClientManager)
         {
             this.Auth = Auth;
             this.options = options;
+            this.ClientManager = ClientManager;
         }
         /// <summary>
         /// The only official way to get an access token for this API
@@ -66,13 +68,23 @@ namespace WebAPI.Controllers
         /// <response code="200">Operation successful</response>
         /// <response code="409">Username already exists</response>
         [ProducesResponseType(200, Type = null)]
-        [ProducesResponseType(409, Type = null)]
+        [ProducesResponseType(409, Type = typeof(string))]
+        [Authorize(Roles = "Admin")]
         [HttpPost("Register")]
-        public IActionResult Register([FromBody]UserAuthenticationRequest request)
+        public IActionResult Register([FromBody]UserRegisterRequest request)
         {
-            if (Auth.Register(request, UserRole.User))
-                return Ok();
-            return StatusCode(StatusCodes.Status409Conflict);
+            RegisterResult result = ClientManager.RegisterClient(request);
+            switch(result)
+            {
+                case RegisterResult.Ok:
+                    return Ok();
+                case RegisterResult.PhonenumberExists:
+                    return StatusCode(StatusCodes.Status409Conflict, "Phonenumber exists");
+                case RegisterResult.UsernameExists:
+                    return StatusCode(StatusCodes.Status409Conflict, "Username exists");
+                default:
+                    throw new NotImplementedException($"{result.ToString()} Register result is not implmented");
+            }
         }
         /// <summary>
         /// Logs-out user from all devices

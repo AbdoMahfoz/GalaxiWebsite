@@ -8,6 +8,7 @@ namespace Repository.ExtendedRepositories
     {
         Client GetByPhonenumber(string Phonenumber);
         IQueryable<Client> GetByPhonenumbers(params string[] Phonenumbers);
+        bool PhonenumberExists(string Phonenumber);
     }
     public class ClientRepository : Repository<Client>, IClientRepository
     {
@@ -23,6 +24,12 @@ namespace Repository.ExtendedRepositories
             return from client in context.Clients
                    where Phonenumbers.Contains(client.Phonenumber) && !client.IsDeleted
                    select client;
+        }
+        public bool PhonenumberExists(string Phonenumber)
+        {
+            return (from client in context.Clients
+                    where client.Phonenumber == Phonenumber && !client.IsDeleted
+                    select client).Any();
         }
     }
 }

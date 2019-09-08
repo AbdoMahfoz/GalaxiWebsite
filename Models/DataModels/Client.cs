@@ -11,6 +11,8 @@ namespace Models.DataModels
         [Required]
         public int FacultyId { get; set; }
         public virtual Faculty Faculty { get; set; }
+        public int UserId { get; set; }
+        public virtual User User { get; set; }
         public string Email { get; set; }
         public int Year { get; set; }
     }
